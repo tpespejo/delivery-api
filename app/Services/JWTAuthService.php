@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Services;
 
-use App\Http\Controllers\Controller;
 use Firebase\JWT\JWT;
 use Illuminate\Http\Request;
 
-class TokenController extends Controller
+class JwtAuthService
 {
     //
     public function generateBearerToken()

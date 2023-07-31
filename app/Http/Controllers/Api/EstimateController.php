@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\HttpService;
-use App\Http\Controllers\Api\TokenController;
+use App\Services\JWTAuthService; // Add the JwtAuthService namespace
+use App\Helpers\PayloadHelper; // Import the PayloadHelper
 
 class EstimateController extends Controller
 {
@@ -29,11 +30,7 @@ class EstimateController extends Controller
         ];
 
         // Prepare the payload
-        $data = [
-            "data" => [
-                "attributes" => $request->all()
-            ]
-        ];
+        $data = PayloadHelper::preparePayload($request->all());
 
         // Make a POST request with the authentication header and payload using the HttpService instance
         $response = $httpService->post('https://api.staging.quadx.xyz/v2/orders/estimates/dates', $data, $headers);
@@ -79,11 +76,7 @@ public function checkEstimateRates(Request $request)
         ];
 
         // Prepare the payload
-        $data = [
-            "data" => [
-                "attributes" => $request->all()
-            ]
-        ];
+        $data = PayloadHelper::preparePayload($request->all());
 
         // Make a POST request with the authentication header and payload using the HttpService instance
         $response = $httpService->post('https://api.staging.quadx.xyz/v2/orders/estimates/rates', $data, $headers);
