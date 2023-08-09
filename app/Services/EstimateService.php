@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Services\HttpService;
 use App\Services\JWTAuthService;
 use App\Helpers\PayloadHelper;
+use Illuminate\Support\Arr;
 
 class EstimateService
 {
@@ -79,29 +80,15 @@ class EstimateService
             $response = $httpService->post('https://api.staging.quadx.xyz/v2/orders/estimates/rates', $data, $headers);
 
             // Check if the API call was successful
-            if ($response->successful()) {
-                // Get the JSON response
-                $responseData = $response->json();
-
-                // Check if the service_type is "next_day"
-                $serviceType = $requestData['service_type'];
-                if ($serviceType === 'next_day') {
-                    // Set shipping_fee to null if service_type is "next_day"
-                    $shippingFee = null;
-                } else {
-                    // Extract the shipping fee from the JSON response
-                    // Assuming the shipping fee is available in the 'data' key
-                    $shippingFee = $responseData['data']['attributes']['shipping_fee'];
-                }
-
-                return [
-                    'shipping_fee' => $shippingFee
-                ];
-
-            } else {
+            if (!$response->successful()) {
                 return null;
             }
+
+            return [
+                'shipping_fee' => Arr::get($response->json(), 'data.attributes.shipping_fee')
+            ];
         } catch (\Exception $e) {
+            dd($e->getMessage() . $e->getTraceAsString());
             // Exception occurred, handle the error and return 500 Internal Server Error
             return response()->json(['error' => 'Internal Server Error'], 500);
         }
